@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- Watermelon Name -->
+        <TextView
+            android:id="@+id/watermelonNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30sp"
+            android:text="Watermelon"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:padding="8dp" />
+
+        <!-- Watermelon Image -->
+        <ImageView
+            android:id="@+id/watermelonImageView"
+            android:layout_width="280dp"
+            android:layout_height="280dp"
+            android:src="@drawable/image_black_diamond_watermelon"
+            android:adjustViewBounds="true"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Introduction Text -->
+        <TextView
+            android:id="@+id/introductionTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="lorem ipsum"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Bulleted List -->
+        <TextView
+            android:id="@+id/bulletedListTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Buttons Container -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <!-- Go Home Button -->
+            <Button
+                android:id="@+id/goHomeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Go Home"
+                android:layout_marginEnd="16dp" />
+
+            <!-- Learn More Button -->
+            <Button
+                android:id="@+id/learnMoreButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Learn More" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

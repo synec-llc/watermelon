@@ -1,0 +1,243 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:id="@+id/resultTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            android:text="Result will appear here"
+            android:textColor="#000"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <!-- Common Name with Scientific Name -->
+        <TextView
+            android:id="@+id/age_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:gravity="center"
+            android:text="young, adult etc"
+            android:textSize="16sp"
+            android:textStyle="italic" />
+
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:layout_marginBottom="16dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/loading_icon"
+            android:rotation="90" />
+
+
+        <!-- Summary Text -->
+        <TextView
+            android:id="@+id/tv_summary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:text="Summary of the ripeness level"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_short_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:text="Detailed description about the pest goes here in multiple paragraphs." />
+
+
+        <!-- Damage Symptoms -->
+        <TextView
+            android:id="@+id/tv_damage_symptoms_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nutritional Summary:"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_damage_symptoms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:text="Damage details go here." />
+
+
+        <!-- Host Plants -->
+        <TextView
+            android:id="@+id/tv_host_plants_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Optimal Growth Conditions:"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_host_plants"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:text="Host plant details go here." />
+
+        <!-- Geographical Distribution -->
+        <TextView
+            android:id="@+id/tv_geographical_distribution_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Regions Cultivated:"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_geographical_distribution"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:text="Geographical distribution details go here." />
+
+        <!-- Pesticide Recommendation -->
+        <TextView
+            android:id="@+id/tv_pesticide_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:text="Learn More:"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <GridLayout
+            android:id="@+id/grid_pesticides"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:columnCount="3"
+            android:paddingTop="8dp"
+            android:rowCount="1">
+
+            <ImageView
+                android:id="@+id/icon_shoppee"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Shoppee Icon"
+                android:src="@drawable/ic_shoppee" />
+
+            <ImageView
+                android:id="@+id/icon_lazada"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginEnd="8dp"
+                android:contentDescription="Lazada Icon"
+                android:src="@drawable/ic_lazada" />
+
+            <ImageView
+                android:id="@+id/icon_random_store"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:contentDescription="Random Store Icon"
+                android:src="@drawable/ic_random" />
+        </GridLayout>
+
+        <!-- Life Cycle Image -->
+        <TextView
+            android:id="@+id/tv_life_cycle_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Life Cycle:"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/img_life_cycle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:contentDescription="Life cycle of the pest"
+            android:scaleType="centerCrop"
+            android:src="@drawable/loading_icon" />
+
+        <!-- Detailed Description -->
+        <TextView
+            android:id="@+id/tv_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:text="Detailed description about the pest goes here in multiple paragraphs." />
+
+
+        <GridLayout
+            android:id="@+id/gridLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:columnCount="2"
+            android:padding="16dp"
+            android:rowCount="2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <!-- Image 1 -->
+            <ImageView
+                android:id="@+id/image1"
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:layout_margin="8dp"
+                android:contentDescription="Image 1"
+                android:scaleType="centerCrop"
+                android:src="@drawable/loading_icon" />
+
+
+            <ImageView
+                android:id="@+id/image2"
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:layout_margin="8dp"
+                android:contentDescription="Image 1"
+                android:scaleType="centerCrop"
+                android:src="@drawable/loading_icon" />
+
+            <ImageView
+                android:id="@+id/image3"
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:layout_margin="8dp"
+                android:contentDescription="Image 1"
+                android:scaleType="centerCrop"
+                android:src="@drawable/loading_icon" />
+
+            <ImageView
+                android:id="@+id/image4"
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:layout_margin="8dp"
+                android:contentDescription="Image 1"
+                android:scaleType="centerCrop"
+                android:src="@drawable/loading_icon" />
+
+        </GridLayout>
+
+        <Button
+            android:id="@+id/homeButton"
+            android:layout_marginTop="30dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Scan Again" />
+
+    </LinearLayout>
+</ScrollView>
