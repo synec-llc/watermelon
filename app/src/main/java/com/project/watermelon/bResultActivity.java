@@ -89,15 +89,44 @@ public class bResultActivity extends AppCompatActivity {
 
 
         // Display the result image
+        // Display the result image
         if (result != null) {
             try {
                 // Parse and filter the result
                 List<Map<String, Object>> detections = parseDetectionData(result);
-                Log.d(TAG, "onCreate: JSONRESULTS");
-                Log.d(TAG, "onCreate: " + detections);
-                String typeFinal = "";
+                Log.d(TAG, "Detections: " + detections);
 
-                // Log the filtered results
+                // Check for "Watermelon" in detections
+                boolean hasWatermelon = false;
+
+                for (Map<String, Object> detection : detections) {
+                    String type = (String) detection.get("type");
+                    if ("Watermelon".equalsIgnoreCase(type)) {
+                        hasWatermelon = true;
+                        break;
+                    }
+                }
+
+                // Show alert dialog if no watermelon is detected
+                if (!hasWatermelon) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("No Detected Watermelon")
+                            .setMessage("There is no watermelon image identified in the provided image. Detected null. Returning to the main screen.")
+                            .setCancelable(false) // Prevent dismissing by tapping outside
+                            .setPositiveButton("OK", (dialog, which) -> {
+                                // Redirect to MainActivity and finish the current activity
+                                Intent intent2 = new Intent(this, MainActivity.class);
+                                intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent2);
+                                finish();
+                            });
+
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                    return; // Exit the method since no further processing is needed
+                }
+
+                // Load the image
                 Bitmap bitmap = null;
                 if (imagePath != null) {
                     File imageFile = new File(imagePath);
@@ -112,109 +141,83 @@ public class bResultActivity extends AppCompatActivity {
                     Toast.makeText(this, "No image data found.", Toast.LENGTH_SHORT).show();
                 }
 
-                // If image and detections are available, draw bounding boxes
-                if (bitmap != null && !detections.isEmpty()) {
-                    Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-                    Canvas canvas = new Canvas(mutableBitmap);
-                    Paint paint = new Paint();
-                    paint.setColor(Color.RED);
-                    paint.setStyle(Paint.Style.STROKE);
-                    paint.setStrokeWidth(10);
+                // Validate detections and image
+                if (bitmap == null || detections.isEmpty()) {
+                    Toast.makeText(this, "Image is not valid", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(this, MainActivity.class));
+                    finish();
+                    return;
+                }
 
-                    // Customize text paint for labels and confidence
-                    Paint textPaint = new Paint();
-                    textPaint.setColor(Color.WHITE); // Set text color to white
-                    textPaint.setTextSize(100);
-                    textPaint.setStyle(Paint.Style.FILL);
-                    textPaint.setShadowLayer(20f, 0f, 0f, Color.BLACK); // Add shadow for better visibility
+                // Prepare for drawing on the image
+                Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+                Canvas canvas = new Canvas(mutableBitmap);
+                Paint paint = new Paint();
+                paint.setColor(Color.RED);
+                paint.setStyle(Paint.Style.STROKE);
+                paint.setStrokeWidth(20);
 
-//                    for (Map<String, Object> detection : detections) {
-//                        Log.d(TAG, "Detected: "+detection.toString());
-//                        String type = (String) detection.get("type");
-//                        Log.d(TAG, "onCreate: "+type);
-//                        if ("Watermelon".equals(type)) {
-//                            Log.d(TAG, "lalala");
-//
-//
-//
-//                        }
-//                    }
+                // Text paint for labels
+                Paint textPaint = new Paint();
+                textPaint.setColor(Color.WHITE);
+                textPaint.setTextSize(120);
+                textPaint.setStyle(Paint.Style.FILL);
+                textPaint.setShadowLayer(20f, 0f, 0f, Color.BLACK);
 
-                    for (Map<String, Object> detection : detections) {
-                        String type1 = (String) detection.get("type");
-                        Log.d(TAG, "onCreate: "+type1);
+                // Process each detection
+                for (Map<String, Object> detection : detections) {
+                    String type = (String) detection.get("type");
+                    double confidence = (double) detection.get("confidence");
+                    double[] coordinates = (double[]) detection.get("coordinates");
+
+                    Log.d(TAG, "Detection: " + type + " with confidence " + confidence);
+
+                    // Only process Watermelon detections
+                    if ("Watermelon".equalsIgnoreCase(type)) {
+                        // Bounding box coordinates
+                        float xMin = (float) coordinates[0] * bitmap.getWidth();
+                        float yMin = (float) coordinates[2] * bitmap.getHeight();
+                        float xMax = (float) coordinates[1] * bitmap.getWidth();
+                        float yMax = (float) coordinates[3] * bitmap.getHeight();
+
+                        // Draw bounding box
+                        canvas.drawRect(new RectF(xMin, yMin, xMax, yMax), paint);
+
+                        // Add label with confidence
+                        String confidenceText = String.format("%.2f%%", confidence * 100);
+                        String label = type + " " + confidenceText;
+                        float textWidth = textPaint.measureText(label);
+                        float textHeight = textPaint.getTextSize();
+                        float labelPadding = 2f;
+//                        textPaint.setTextSize(10); // Set a smaller text size
 
 
-                        if ("Watermelon".equals(type1)) {
-                            Log.d(TAG, "lalala");
-                            final String[] type = {(String) detection.get("type")};
+                        // Background for text
+                        Paint backgroundPaint = new Paint();
+                        backgroundPaint.setColor(Color.RED);
+                        backgroundPaint.setStyle(Paint.Style.FILL);
+                        canvas.drawRect(xMin, yMin, xMin + textWidth + labelPadding * 2, yMin + textHeight + labelPadding * 2, backgroundPaint);
 
-                            double confidence = (double) detection.get("confidence");
-                            double[] coordinates = (double[]) detection.get("coordinates");
+                        // Draw text label
+                        canvas.drawText(label, xMin + labelPadding, yMin + textHeight + labelPadding, textPaint);
 
-                            // Convert confidence to percentage
-                            String confidenceText = String.format("%.2f%%", confidence * 100);
+                        // Log maturity and update UI
+                        String maturityInfo = analyzeMaturity(bitmap, xMin, yMin, xMax, yMax);
+                        Log.d(TAG, "Maturity Info: " + maturityInfo);
 
-                            // Get coordinates
-                            float xMin = (float) coordinates[0] * bitmap.getWidth();
-                            float yMin = (float) coordinates[2] * bitmap.getHeight();
-                            float xMax = (float) coordinates[1] * bitmap.getWidth();
-                            float yMax = (float) coordinates[3] * bitmap.getHeight();
-
-
-                            // Draw the bounding box
-                            canvas.drawRect(new RectF(xMin, yMin, xMax, yMax), paint);
-                            String label = type[0] + " " + confidenceText;
-                            float textWidth = textPaint.measureText(label);
-                            Paint backgroundPaint = new Paint();
-                            backgroundPaint.setColor(Color.RED); // Background color for the label
-                            backgroundPaint.setStyle(Paint.Style.FILL);
-
-                            float textHeight = textPaint.getTextSize();
-                            float labelPadding = 8f; // Padding around the text
-                            canvas.drawRect(xMin, yMin, xMin + textWidth + labelPadding * 2, yMin + textHeight + labelPadding * 2, backgroundPaint);
-
-                            // Draw the text inside the bounding box
-                            canvas.drawText(label, xMin + labelPadding, yMin + textHeight + labelPadding, textPaint);
-
-                            // Set the modified image with bounding boxes and text
-                            Log.d(TAG, "Mutable Bitmap now here");
-                            imageView.setImageBitmap(mutableBitmap);
-
-                            Log.d(TAG, "onResponseReceived: " + type[0]);
-                            if (type[0].toLowerCase().equals("watermelon")) {
-                                String maturityInfo = analyzeMaturity(bitmap, xMin, yMin, xMax, yMax);
-                                Log.d(TAG, "Maturity Info: " + maturityInfo);
-
-//                            putInformationAboutTheThePest(type[0], confidenceText, ageGroup);
-                                putInformationAboutTheThePest(maturityInfo, confidenceText, ageGroup);
-                            }
-                        }else {
-//                          Show an alert dialog
-                            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                            builder.setTitle("No Detected Watermelon ")
-                                    .setMessage("There is no watermelon image identified in the provided image. Detected " + type1 + ". Returning to the main screen.")
-                                    .setCancelable(false) // Prevent dismissing by tapping outside
-                                    .setPositiveButton("OK", (dialog, which) -> {
-                                        // Redirect to MainActivity and finish the current activity
-                                        Intent intent2 = new Intent(this, MainActivity.class);
-                                        intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        startActivity(intent2);
-                                        finish();
-                                    });
-
-                            AlertDialog alert = builder.create();
-                            alert.show();
-                        }
-
+                        putInformationAboutTheThePest(maturityInfo, confidenceText, ageGroup);
                     }
                 }
+
+                // Set the modified image with bounding boxes and text
+                imageView.setImageBitmap(mutableBitmap);
 
             } catch (Exception e) {
                 Log.e(TAG, "Failed to process result: " + e.getMessage(), e);
             }
         } else {
             Log.e(TAG, "No result found in Intent.");
+            Toast.makeText(this, "No result found in Intent.", Toast.LENGTH_SHORT).show();
         }
 
 
@@ -224,6 +227,7 @@ public class bResultActivity extends AppCompatActivity {
             Intent intent2 = new Intent(bResultActivity.this, MainActivity.class); // Replace `CurrentActivity` with your current activity name
             intent2.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent2);
+            finish();
             finish(); // Close the current activity
         });
 
@@ -438,15 +442,34 @@ public class bResultActivity extends AppCompatActivity {
         return detectionList;
     }
 
+
+
+
     private String analyzeMaturity(Bitmap bitmap, float xMin, float yMin, float xMax, float yMax) {
+        if (bitmap == null) {
+            Log.e("analyzeMaturity", "Bitmap is null");
+            return "Unknown - Bitmap is null";
+        }
+
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
 
-        // Convert bounding box coordinates to integer pixel values
-        int startX = Math.max(0, (int) (xMin * width));
-        int startY = Math.max(0, (int) (yMin * height));
-        int endX = Math.min(width, (int) (xMax * width));
-        int endY = Math.min(height, (int) (yMax * height));
+        // Use coordinates as they are already absolute
+        int startX = Math.max(0, Math.min(width, (int) xMin));
+        int startY = Math.max(0, Math.min(height, (int) yMin));
+        int endX = Math.max(0, Math.min(width, (int) xMax));
+        int endY = Math.max(0, Math.min(height, (int) yMax));
+
+        Log.d("BoundingBox", "startX: " + startX + ", startY: " + startY +
+                ", endX: " + endX + ", endY: " + endY +
+                ", Bitmap width: " + width + ", Bitmap height: " + height);
+
+        // Ensure the bounding box is valid
+        if (startX >= endX || startY >= endY) {
+            Log.e("analyzeMaturity", "Invalid bounding box: startX=" + startX + ", startY=" + startY +
+                    ", endX=" + endX + ", endY=" + endY);
+            return "Unknown - Invalid bounding box";
+        }
 
         long whiteCount = 0;
         long lightGreenCount = 0;
@@ -455,6 +478,7 @@ public class bResultActivity extends AppCompatActivity {
         long orangeCount = 0;
 
         // Iterate over the pixels in the bounding box
+        Log.d("analyzeMaturity", "Iterating over pixels in bounding box...");
         for (int x = startX; x < endX; x++) {
             for (int y = startY; y < endY; y++) {
                 int pixel = bitmap.getPixel(x, y);
@@ -464,44 +488,47 @@ public class bResultActivity extends AppCompatActivity {
                 int green = (pixel >> 8) & 0xFF;
                 int blue = pixel & 0xFF;
 
-                // Log RGB values for debugging
-                Log.d("PixelColors", "Red: " + red + ", Green: " + green + ", Blue: " + blue);
-
                 // Determine the dominant color category
-                if (red > 240 && green > 240 && blue > 240) { // White
+                if (red > 220 && green > 220 && blue > 220) { // White
                     whiteCount++;
-                } else if (red > 120 && green > 200 && blue > 120) { // Light Green
+                } else if (green > red && green > blue && green > 180) { // Light Green
                     lightGreenCount++;
-                } else if (red < 120 && green > 100 && blue < 80) { // Dark Green
+                } else if (green > red && green > blue && green > 100 && green <= 180) { // Dark Green
                     darkGreenCount++;
-                } else if (red > 200 && green > 180 && blue < 80) { // Creamy Yellow
+                } else if (red > green && red > blue && red > 180 && green > 150) { // Creamy Yellow
                     creamyYellowCount++;
-                } else if (red > 200 && green > 100 && blue < 80) { // Orange
+                } else if (red > green && red > blue && red > 180 && green <= 90) { // Orange
                     orangeCount++;
                 }
             }
         }
 
-        // Log color counts for debugging
         Log.d("ColorCounts", "White: " + whiteCount +
                 ", LightGreen: " + lightGreenCount +
                 ", DarkGreen: " + darkGreenCount +
                 ", CreamyYellow: " + creamyYellowCount +
                 ", Orange: " + orangeCount);
 
-        // Determine the ripeness level based on dominant color or ratios
-        if (whiteCount > lightGreenCount && whiteCount > darkGreenCount && whiteCount > creamyYellowCount && whiteCount > orangeCount) {
+        // Calculate total pixels analyzed
+        long totalPixels = whiteCount + lightGreenCount + darkGreenCount + creamyYellowCount + orangeCount;
+
+        if (totalPixels == 0) {
+            Log.e("analyzeMaturity", "No pixels analyzed.");
+            return "Unknown - No valid pixels";
+        }
+
+        // Determine ripeness level based on stricter rules
+        if (whiteCount > 0.4 * totalPixels) {
             return "Unripe";
-        } else if (lightGreenCount > whiteCount && lightGreenCount > darkGreenCount && lightGreenCount > creamyYellowCount && lightGreenCount > orangeCount) {
+        } else if (lightGreenCount > 0.3 * totalPixels || lightGreenCount > darkGreenCount) {
             return "Underripe";
-        } else if (darkGreenCount + creamyYellowCount > whiteCount + lightGreenCount + orangeCount) {
+        } else if (darkGreenCount > 0.25 * totalPixels || creamyYellowCount > 0.2 * totalPixels) {
             return "Ripe";
-        } else if (orangeCount > whiteCount && orangeCount > lightGreenCount && orangeCount > darkGreenCount && orangeCount > creamyYellowCount) {
+        } else if (orangeCount > 0.15 * totalPixels) {
             return "Overripe";
         }
 
-        Log.d(TAG, "analyzeMaturity: nothing detected");
-        return "Ripe";
+        return "Unknown";
     }
 
 

@@ -104,9 +104,8 @@ public class MainActivity extends AppCompatActivity {
 
             // Convert the URI to a File (example method below)
             File photoFile = new File(getRealPathFromURI(imageUri));
-
-            // Call the method to process the image
             processImageWithEdenAI(photoFile);
+
         }
     }
     private String getRealPathFromURI(Uri contentUri) {
