@@ -152,7 +152,7 @@ public class EdenAIWorkflowRunner {
                         JSONObject responseJson = new JSONObject(responseString);
                         String status = responseJson.getJSONObject("content").getString("status");
 
-                        if ("success".equalsIgnoreCase(status)) {
+                        if ("success".equalsIgnoreCase(status) || "succeeded".equalsIgnoreCase(status) ) {
                             result = responseJson.toString(); // Final result
                             break;
                         } else if ("error".equalsIgnoreCase(status)) {

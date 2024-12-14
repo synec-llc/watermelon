@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -199,21 +200,46 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void processImageWithEdenAI(File image) {
-        //I want to run a loading screen here
+//    private void processImageWithEdenAI(File image) {
+//        //I want to run a loading screen here
+//        showLoadingDialog();
+//        // Convert the drawable resource to a File
+////        File imageFile = getFileFromDrawable(this, R.drawable.img_meal_one);
+//        File imageFile = image;
+//        Log.d(TAG, "processImageWithEdenAI: image is imported");
+//        if (imageFile != null) {
+//            // Call the EdenAIWorkflowRunner class
+//            EdenAIWorkflowRunner workflowRunner = new EdenAIWorkflowRunner(this);
+//            workflowRunner.runWorkflow(imageFile);
+//        } else {
+//            Log.e(TAG, "Failed to convert drawable to file.");
+//        }
+//    }
+
+    private void processImageWithEdenAI(File imageFile) {
         showLoadingDialog();
-        // Convert the drawable resource to a File
-//        File imageFile = getFileFromDrawable(this, R.drawable.img_meal_one);
-        File imageFile = image;
-        Log.d(TAG, "processImageWithEdenAI: image is imported");
-        if (imageFile != null) {
-            // Call the EdenAIWorkflowRunner class
+
+        try {
+            // Compress the image file
+            File compressedFile = compressImage(imageFile);
+            Log.d(TAG, "processImageWithEdenAI: Compressed file size: " + compressedFile.length());
+
+            if (compressedFile != null) {
+                // Call the EdenAIWorkflowRunner class
+                EdenAIWorkflowRunner workflowRunner = new EdenAIWorkflowRunner(this);
+                workflowRunner.runWorkflow(compressedFile);
+            } else {
+                Log.e(TAG, "Compression failed. Using original file.");
+                EdenAIWorkflowRunner workflowRunner = new EdenAIWorkflowRunner(this);
+                workflowRunner.runWorkflow(imageFile);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error while compressing image: " + e.getMessage());
             EdenAIWorkflowRunner workflowRunner = new EdenAIWorkflowRunner(this);
             workflowRunner.runWorkflow(imageFile);
-        } else {
-            Log.e(TAG, "Failed to convert drawable to file.");
         }
     }
+
 
     private File getFileFromDrawable(Context context, int drawableId) {
         try {
@@ -280,4 +306,23 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+
+    private File compressImage(File originalFile) throws Exception {
+        // Decode the original file to a Bitmap
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        Bitmap bitmap = BitmapFactory.decodeFile(originalFile.getAbsolutePath(), options);
+
+        // Create a compressed file in the cache directory
+        File compressedFile = new File(getCacheDir(), "compressed_" + originalFile.getName());
+        FileOutputStream outputStream = new FileOutputStream(compressedFile);
+
+        // Compress the bitmap to reduce file size (quality is a percentage: 100 is max)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 1, outputStream); // Adjust quality as needed
+        outputStream.close();
+
+        Log.d(TAG, "Image compressed successfully: " + compressedFile.getAbsolutePath());
+        return compressedFile;
+    }
+
 }
