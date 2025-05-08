@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <!-- Left: Image -->
+    <ImageView
+        android:id="@+id/ivThumbnail"
+        android:layout_width="150dp"
+        android:layout_height="130dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/img_meal_two"
+        android:layout_marginEnd="16dp" />
+
+    <!-- Right: Vertical layout containing text views -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Result" />
+
+        <TextView
+            android:id="@+id/tvConfidence"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Confidence" />
+
+        <TextView
+            android:id="@+id/tvDateTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DateTime" />
+
+        <TextView
+            android:id="@+id/tvDeviceId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Device ID" />
+
+        <TextView
+            android:id="@+id/tvScanType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Scan Type" />
+    </LinearLayout>
+</LinearLayout>

@@ -16,8 +16,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class EdenAIWorkflowRunner {
     private static final String TAG = "EdenAIWorkflowRunner";
@@ -185,23 +187,55 @@ public class EdenAIWorkflowRunner {
         protected void onPostExecute(String result) {
             if (result != null) {
                 Log.d(TAG, "Final Workflow Result: " + result);
-                Toast.makeText(context, "Processing completed", Toast.LENGTH_SHORT).show();
+                boolean targetFound = isTargetObjectDetected(result);
+                if (targetFound) {
+                    Log.d(TAG, "Target object detected in the image.");
+                    Toast.makeText(context, "Target object detected!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.d(TAG, "No target object detected.");
+                    Toast.makeText(context, "No target object detected.", Toast.LENGTH_SHORT).show();
+                }
 
-                // Pass the result and the image file path to the next activity
+                // Pass the result and image path to the next activity
                 Intent i = new Intent(context, bResultActivity.class);
                 i.putExtra("result", result);
                 i.putExtra("age", ageGroup);
-
-
-                i.putExtra("image_path", imageFile2.getAbsolutePath()); // Pass the image file path
+                i.putExtra("image_path", imageFile2.getAbsolutePath());
                 context.startActivity(i);
+
             } else {
                 Log.e(TAG, "Failed to retrieve final results.");
                 Toast.makeText(context, "Failed to fetch results.", Toast.LENGTH_SHORT).show();
             }
         }
 
+
+
+
+
     }
+
+    public static boolean isTargetObjectDetected(String jsonResponse) {
+        List<Map<String, Object>> detections = extractDetectionData(jsonResponse);
+        // Define valid labels: watermelon, mobile phone, computer,
+        // and additional fruits that might resemble a watermelon
+        Set<String> validLabels = new HashSet<>();
+        validLabels.add("watermelon");
+        validLabels.add("mobile phone");
+        validLabels.add("computer");
+        validLabels.add("pumpkin");       // example fruit that might look similar
+        validLabels.add("cantaloupe");    // another similar fruit
+        validLabels.add("honeydew");      // and another example
+
+        for (Map<String, Object> detection : detections) {
+            String label = (String) detection.get("type");
+            if (label != null && validLabels.contains(label.toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public static List<Map<String, Object>> extractDetectionData(String jsonResponse) {
         List<Map<String, Object>> detectionResults = new ArrayList<>();

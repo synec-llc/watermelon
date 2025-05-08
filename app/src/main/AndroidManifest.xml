@@ -21,6 +21,15 @@
         android:theme="@style/Theme.Od_cornpest"
         tools:targetApi="31">
         <activity
+            android:name=".cResultViewOnlyActivity"
+            android:exported="false" />
+        <activity
+            android:name=".bScanHistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".aHomeActivity"
+            android:exported="false" />
+        <activity
             android:name=".cLibraryInformationActivity"
             android:exported="false" />
         <activity

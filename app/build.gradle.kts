@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -10,8 +11,8 @@ android {
         applicationId = "com.project.watermelon"
         minSdk = 30
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 6
+        versionName = "6.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -39,10 +40,17 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.camera.view)
     implementation(libs.camera.lifecycle)
+    implementation(libs.firebase.storage)
+    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     implementation("com.android.volley:volley:1.2.1")
+
+    implementation ("com.google.guava:guava:31.0.1-android")
+
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.15.1")
     // CameraX Dependencies
 //    implementation ("androidx.camera:camera-core:1.5.0")
 //    implementation ("androidx.camera:camera-camera2:1.5.0")
